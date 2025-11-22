@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="IBD Tracker">
+    <meta name="theme-color" content="#3b82f6">
+    <link rel="manifest" href="manifest.json">
+    <title>IBD Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .action-btn {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .action-btn:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+
+        .action-btn .icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .action-btn .label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .stat-item {
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 10px;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            font-size: 24px;
+            color: #1a1a1a;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 28px;
+            width: 100%;
+            max-width: 420px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: #f3f4f6;
+            border: none;
+            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            color: #6b7280;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .close-btn:hover {
+            background: #e5e7eb;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: #fafafa;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .slider-container {
+            padding: 16px 0;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e5e7eb;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .value-display {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 600;
+            color: #3b82f6;
+            margin-top: 12px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .log-item {
+            background: #fafafa;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .log-time {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 6px;
+        }
+
+        .log-title {
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+            font-size: 15px;
+        }
+
+        .log-details {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: #fee;
+            color: #dc2626;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 12px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            color: #9ca3af;
+            transition: color 0.2s;
+        }
+
+        .nav-item.active {
+            color: #3b82f6;
+        }
+
+        .nav-item .icon {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item .label {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .option-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .option-btn {
+            padding: 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #fafafa;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .option-btn.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .bristol-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        .bristol-btn {
+            padding: 12px 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fafafa;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .bristol-btn.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .bristol-label {
+            font-size: 9px;
+            color: #6b7280;
+            margin-top: 4px;
+            display: block;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            margin: 16px 0;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-item label {
+            font-size: 14px;
+            color: #374151;
+            cursor: pointer;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9ca3af;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .chart-container {
+            margin: 20px 0;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 180px;
+            padding: 16px 0;
+            gap: 8px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .bar {
+            flex: 1;
+            background: linear-gradient(to top, #3b82f6, #60a5fa);
+            border-radius: 6px 6px 0 0;
+            position: relative;
+            min-height: 4px;
+            transition: all 0.3s;
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: #6b7280;
+            white-space: nowrap;
+        }
+
+        .insight-card {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .insight-title {
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .insight-text {
+            color: #1e3a8a;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .trigger-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px;
+            background: #fef3c7;
+            border: 1px solid #fde047;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+
+        .trigger-food {
+            font-weight: 500;
+            color: #92400e;
+        }
+
+        .trigger-count {
+            background: #fbbf24;
+            color: #78350f;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .heatmap {
+            display: grid;
+            grid-template-columns: repeat(24, 1fr);
+            gap: 4px;
+            margin: 16px 0;
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            background: #f3f4f6;
+            position: relative;
+        }
+
+        .heatmap-cell.level-1 {
+            background: #dbeafe;
+        }
+
+        .heatmap-cell.level-2 {
+            background: #93c5fd;
+        }
+
+        .heatmap-cell.level-3 {
+            background: #60a5fa;
+        }
+
+        .heatmap-cell.level-4 {
+            background: #3b82f6;
+        }
+
+        .heatmap-cell.level-5 {
+            background: #2563eb;
+        }
+
+        .heatmap-label {
+            font-size: 9px;
+            color: #6b7280;
+            text-align: center;
+            margin-top: 4px;
+        }
+
+        .meal-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 8px;
+            margin: 12px 0;
+        }
+
+        .meal-option {
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 6px;
+        }
+
+        .meal-option:hover {
+            background: #f9fafb;
+        }
+
+        .meal-option.selected {
+            background: #eff6ff;
+            border: 1px solid #3b82f6;
+        }
+
+        .meal-info {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .link-section {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 10px;
+            margin-top: 16px;
+        }
+
+        .link-section h3 {
+            font-size: 14px;
+            color: #374151;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal.active .modal-content {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #f3f4f6;
+            color: #4b5563;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin: 2px;
+        }
+
+        .offline-indicator {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fef3c7;
+            border: 1px solid #fde047;
+            color: #92400e;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            display: none;
+            z-index: 2000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .offline-indicator.show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="offline-indicator" id="offlineIndicator">🔌 מצב לא מקוון - הנתונים נשמרים מקומית</div>
+
+    <div class="container">
+        <!-- Home Page -->
+        <div id="homePage" class="page active">
+            <div class="header">
+                <h1>IBD Tracker</h1>
+                <p>מעקב מתקדם אחר בריאות המעי</p>
+            </div>
+
+            <div class="quick-actions">
+                <button class="action-btn" onclick="openMealModal()">
+                    <div class="icon">+</div>
+                    <div class="label">הוסף ארוחה</div>
+                </button>
+                <button class="action-btn" onclick="openPainModal()">
+                    <div class="icon">!</div>
+                    <div class="label">דווח כאב</div>
+                </button>
+                <button class="action-btn" onclick="openBMModal()">
+                    <div class="icon">•</div>
+                    <div class="label">יציאה</div>
+                </button>
+                <button class="action-btn" onclick="openJournalModal()">
+                    <div class="icon">✎</div>
+                    <div class="label">יומן יומי</div>
+                </button>
+            </div>
+
+            <div class="card">
+                <h2>היום</h2>
+                <div class="stat-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">ארוחות</div>
+                        <div class="stat-value" id="todayMeals">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">דיווחי כאב</div>
+                        <div class="stat-value" id="todayPain">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">כאב ממוצע</div>
+                        <div class="stat-value" id="avgPain">-</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">יציאות</div>
+                        <div class="stat-value" id="todayBM">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meals Page -->
+        <div id="mealsPage" class="page">
+            <div class="header">
+                <h1>יומן ארוחות</h1>
+                <p>כל מה שאכלת</p>
+            </div>
+            <div id="mealsList" class="card"></div>
+        </div>
+
+        <!-- Pain Page -->
+        <div id="painPage" class="page">
+            <div class="header">
+                <h1>יומן כאבים</h1>
+                <p>מעקב אחר תסמינים</p>
+            </div>
+            <div id="painList" class="card"></div>
+        </div>
+
+        <!-- Statistics Page -->
+        <div id="statsPage" class="page">
+            <div class="header">
+                <h1>סטטיסטיקות</h1>
+                <p>ניתוח מתקדם</p>
+            </div>
+
+            <div class="card">
+                <div class="chart-title">כאב ממוצע - 7 ימים אחרונים</div>
+                <div class="bar-chart" id="painChart"></div>
+            </div>
+
+            <div class="card">
+                <h2>מפת חום - שעות כאב</h2>
+                <div class="heatmap" id="heatmap"></div>
+                <div style="display: flex; justify-content: space-between; margin-top: 8px;">
+                    <span class="heatmap-label">00:00</span>
+                    <span class="heatmap-label">12:00</span>
+                    <span class="heatmap-label">23:00</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>תובנות אוטומטיות</h2>
+                <div id="insights"></div>
+            </div>
+
+            <div class="card">
+                <h2>טריגרים חשודים</h2>
+                <div id="triggersList"></div>
+            </div>
+
+            <button class="btn-primary" onclick="exportReport()" style="margin-bottom: 20px;">ייצוא דוח מלא</button>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="settingsPage" class="page">
+            <div class="header">
+                <h1>הגדרות</h1>
+                <p>ניהול האפליקציה</p>
+            </div>
+
+            <div class="card">
+                <h2>ניהול תרופות</h2>
+                <p style="color: #6b7280; margin-bottom: 16px; font-size: 14px;">הוסף ועקוב אחר תרופות יומיות</p>
+                <button class="btn-primary" onclick="alert('בקרוב - ניהול תרופות מלא')">הוסף תרופה</button>
+            </div>
+
+            <div class="card">
+                <h2>ייצוא נתונים</h2>
+                <p style="color: #6b7280; margin-bottom: 16px; font-size: 14px;">ייצא את כל הנתונים שלך</p>
+                <button class="btn-primary" onclick="exportReport()">ייצוא דוח מלא</button>
+            </div>
+
+            <div class="card">
+                <h2>מחיקת נתונים</h2>
+                <p style="color: #dc2626; margin-bottom: 16px; font-size: 14px;">⚠️ פעולה בלתי הפיכה</p>
+                <button class="btn-primary" style="background: #dc2626;" onclick="clearAllData()">מחק הכל</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <button class="nav-item active" onclick="switchPage('home')">
+            <span class="icon">●</span>
+            <span class="label">בית</span>
+        </button>
+        <button class="nav-item" onclick="switchPage('meals')">
+            <span class="icon">○</span>
+            <span class="label">ארוחות</span>
+        </button>
+        <button class="nav-item" onclick="switchPage('pain')">
+            <span class="icon">!</span>
+            <span class="label">כאבים</span>
+        </button>
+        <button class="nav-item" onclick="switchPage('stats')">
+            <span class="icon">◐</span>
+            <span class="label">סטטיסטיקות</span>
+        </button>
+        <button class="nav-item" onclick="switchPage('settings')">
+            <span class="icon">⚙</span>
+            <span class="label">הגדרות</span>
+        </button>
+    </div>
+
+    <!-- Modals (same as before) -->
+    <div id="mealModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>הוסף ארוחה</h2>
+                <button class="close-btn" onclick="closeMealModal()">×</button>
+            </div>
+            <form onsubmit="saveMeal(event)">
+                <div class="form-group">
+                    <label>שעה</label>
+                    <input type="time" id="mealTime" required>
+                </div>
+                <div class="form-group">
+                    <label>סוג ארוחה</label>
+                    <div class="option-grid">
+                        <button type="button" class="option-btn" onclick="selectMealType('בוקר')">בוקר</button>
+                        <button type="button" class="option-btn" onclick="selectMealType('צהריים')">צהריים</button>
+                        <button type="button" class="option-btn" onclick="selectMealType('ערב')">ערב</button>
+                        <button type="button" class="option-btn" onclick="selectMealType('ביניים')">ביניים</button>
+                    </div>
+                    <input type="hidden" id="mealType" required>
+                </div>
+                <div class="form-group">
+                    <label>מה אכלת?</label>
+                    <textarea id="mealFood" placeholder="לדוגמה: עוף, אורז, ירקות מאודים&#10;הפרד פריטים בפסיקים"
+                        required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>הערות (אופציונלי)</label>
+                    <input type="text" id="mealNotes" placeholder="חריף / טיגון / קר...">
+                </div>
+                <button type="submit" class="btn-primary">שמור ארוחה</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="painModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>דיווח כאב</h2>
+                <button class="close-btn" onclick="closePainModal()">×</button>
+            </div>
+            <form onsubmit="savePain(event)">
+                <div class="form-group">
+                    <label>שעה</label>
+                    <input type="time" id="painTime" required>
+                </div>
+                <div class="form-group">
+                    <label>סוג הכאב</label>
+                    <div class="option-grid">
+                        <button type="button" class="option-btn" onclick="selectPainType('חד')">חד</button>
+                        <button type="button" class="option-btn" onclick="selectPainType('עמום')">עמום</button>
+                        <button type="button" class="option-btn" onclick="selectPainType('שריפה')">שריפה</button>
+                        <button type="button" class="option-btn" onclick="selectPainType('לחץ')">לחץ</button>
+                    </div>
+                    <input type="hidden" id="painType" required>
+                </div>
+                <div class="form-group">
+                    <label>מיקום</label>
+                    <div class="option-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                        <button type="button" class="option-btn" onclick="selectLocation('ימין')">ימין</button>
+                        <button type="button" class="option-btn" onclick="selectLocation('אמצע')">אמצע</button>
+                        <button type="button" class="option-btn" onclick="selectLocation('שמאל')">שמאל</button>
+                    </div>
+                    <input type="hidden" id="painLocation" required>
+                </div>
+                <div class="form-group">
+                    <label>עוצמת כאב (1-10)</label>
+                    <div class="slider-container">
+                        <input type="range" class="slider" min="1" max="10" value="5" id="painLevel"
+                            oninput="updatePainValue()">
+                        <div class="value-display" id="painValue">5</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>הערות</label>
+                    <textarea id="painNotes" placeholder="תיאור הכאב, נסיבות..."></textarea>
+                </div>
+                <div class="link-section">
+                    <h3>קשר לארוחה? (אופציונלי)</h3>
+                    <div id="recentMeals" class="meal-list"></div>
+                </div>
+                <button type="submit" class="btn-primary">שמור כאב</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="bmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>דיווח יציאה</h2>
+                <button class="close-btn" onclick="closeBMModal()">×</button>
+            </div>
+            <form onsubmit="saveBM(event)">
+                <div class="form-group">
+                    <label>שעה</label>
+                    <input type="time" id="bmTime" required>
+                </div>
+                <div class="form-group">
+                    <label>מרקם (Bristol Scale 1-7)</label>
+                    <div class="bristol-grid">
+                        <button type="button" class="bristol-btn" onclick="selectBristol(1)">1<span
+                                class="bristol-label">קשה</span></button>
+                        <button type="button" class="bristol-btn" onclick="selectBristol(2)">2<span
+                                class="bristol-label">קשיח</span></button>
+                        <button type="button" class="bristol-btn" onclick="selectBristol(3)">3<span
+                                class="bristol-label">יבש</span></button>
+                        <button type="button" class="bristol-btn" onclick="selectBristol(4)">4<span
+                                class="bristol-label">תקין</span></button>
+                        <button type="button" class="bristol-btn" onclick="selectBristol(5)">5<span
+                                class="bristol-label">רך</span></button>
+                        <button type="button" class="bristol-btn" onclick="selectBristol(6)">6<span
+                                class="bristol-label">רופס</span></button>
+                        <button type="button" class="bristol-btn" onclick="selectBristol(7)">7<span
+                                class="bristol-label">נוזלי</span></button>
+                    </div>
+                    <input type="hidden" id="bristolScale" required>
+                </div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="hasBlood">
+                        <label for="hasBlood">דם</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="hasUrgency">
+                        <label for="hasUrgency">דחיפות</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">שמור יציאה</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="journalModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>יומן יומי</h2>
+                <button class="close-btn" onclick="closeJournalModal()">×</button>
+            </div>
+            <form onsubmit="saveJournal(event)">
+                <div class="form-group">
+                    <label>איך היה היום? (1-5)</label>
+                    <div class="slider-container">
+                        <input type="range" class="slider" min="1" max="5" value="3" id="dayMood"
+                            oninput="updateMoodValue()">
+                        <div class="value-display" id="moodValue">3</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>רמת אנרגיה (1-10)</label>
+                    <div class="slider-container">
+                        <input type="range" class="slider" min="1" max="10" value="5" id="energyLevel"
+                            oninput="updateEnergyValue()">
+                        <div class="value-display" id="energyValue">5</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>מצב רוח</label>
+                    <select id="moodState">
+                        <option value="רגוע">רגוע</option>
+                        <option value="שמח">שמח</option>
+                        <option value="לחוץ">לחוץ</option>
+                        <option value="עצוב">עצוב</option>
+                        <option value="עייף">עייף</option>
+                    </select>
+                </div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="hadStress">
+                        <label for="hadStress">סטרס</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="hadIllness">
+                        <label for="hadIllness">מחלה</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>הערות</label>
+                    <textarea id="journalNotes" placeholder="איך הרגשת? מה קרה היום?"></textarea>
+                </div>
+                <button type="submit" class="btn-primary">שמור יומן</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('✓ Service Worker רשום'))
+                    .catch(err => console.log('Service Worker שגיאה:', err));
+            });
+        }
+
+        // Offline Detection
+        window.addEventListener('online', () => {
+            document.getElementById('offlineIndicator').classList.remove('show');
+        });
+
+        window.addEventListener('offline', () => {
+            document.getElementById('offlineIndicator').classList.add('show');
+        });
+
+        // Check initial state
+        if (!navigator.onLine) {
+            document.getElementById('offlineIndicator').classList.add('show');
+        }
+
+        let data = {
+            meals: [],
+            pain: [],
+            bm: [],
+            journal: []
+        };
+
+        let selectedMealType = '';
+        let selectedPainType = '';
+        let selectedLocation = '';
+        let selectedBristol = null;
+        let linkedMealId = null;
+
+        function loadData() {
+            const stored = localStorage.getItem('ibd-data');
+            if (stored) {
+                data = JSON.parse(stored);
+                updateUI();
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('ibd-data', JSON.stringify(data));
+        }
+
+        function switchPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(page + 'Page').classList.add('active');
+            event.currentTarget.classList.add('active');
+            if (page === 'meals') loadMeals();
+            if (page === 'pain') loadPainList();
+            if (page === 'stats') loadStatistics();
+        }
+
+        function openMealModal() {
+            document.getElementById('mealModal').classList.add('active');
+            document.getElementById('mealTime').value = new Date().toTimeString().slice(0, 5);
+            selectedMealType = '';
+            document.querySelectorAll('#mealModal .option-btn').forEach(btn => btn.classList.remove('selected'));
+        }
+
+        function closeMealModal() {
+            document.getElementById('mealModal').classList.remove('active');
+        }
+
+        function selectMealType(type) {
+            selectedMealType = type;
+            document.getElementById('mealType').value = type;
+            document.querySelectorAll('#mealModal .option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+                if (btn.textContent === type) btn.classList.add('selected');
+            });
+        }
+
+        function saveMeal(e) {
+            e.preventDefault();
+            const meal = {
+                id: Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                time: document.getElementById('mealTime').value,
+                type: selectedMealType,
+                food: document.getElementById('mealFood').value,
+                notes: document.getElementById('mealNotes').value
+            };
+            data.meals.push(meal);
+            saveData();
+            closeMealModal();
+            updateUI();
+            e.target.reset();
+            alert('✓ ארוחה נשמרה');
+        }
+
+        function openPainModal() {
+            document.getElementById('painModal').classList.add('active');
+            document.getElementById('painTime').value = new Date().toTimeString().slice(0, 5);
+            selectedPainType = '';
+            selectedLocation = '';
+            linkedMealId = null;
+            document.querySelectorAll('#painModal .option-btn').forEach(btn => btn.classList.remove('selected'));
+            loadRecentMeals();
+        }
+
+        function closePainModal() {
+            document.getElementById('painModal').classList.remove('active');
+        }
+
+        function selectPainType(type) {
+            selectedPainType = type;
+            document.getElementById('painType').value = type;
+            const btns = document.querySelectorAll('#painModal .option-btn');
+            btns.forEach(btn => {
+                btn.classList.remove('selected');
+                if (btn.textContent === type) btn.classList.add('selected');
+            });
+        }
+
+        function selectLocation(loc) {
+            selectedLocation = loc;
+            document.getElementById('painLocation').value = loc;
+            const btns = document.querySelectorAll('#painModal .option-btn');
+            btns.forEach(btn => {
+                btn.classList.remove('selected');
+                if (btn.textContent === loc) btn.classList.add('selected');
+            });
+        }
+
+        function updatePainValue() {
+            document.getElementById('painValue').textContent = document.getElementById('painLevel').value;
+        }
+
+        function loadRecentMeals() {
+            const container = document.getElementById('recentMeals');
+            const recent = data.meals.slice(-5).reverse();
+            if (recent.length === 0) {
+                container.innerHTML = '<p style="text-align:center;color:#9ca3af;font-size:13px;">אין ארוחות אחרונות</p>';
+                return;
+            }
+            container.innerHTML = recent.map(m => `
+                <div class="meal-option" onclick="linkMeal(${m.id})" id="meal-${m.id}">
+                    <div style="font-weight:500;margin-bottom:4px;">${m.food}</div>
+                    <div class="meal-info">${m.date} | ${m.time} | ${m.type}</div>
+                </div>
+            `).join('');
+        }
+
+        function linkMeal(id) {
+            linkedMealId = linkedMealId === id ? null : id;
+            document.querySelectorAll('.meal-option').forEach(m => m.classList.remove('selected'));
+            if (linkedMealId) document.getElementById('meal-' + id).classList.add('selected');
+        }
+
+        function savePain(e) {
+            e.preventDefault();
+            const pain = {
+                id: Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                time: document.getElementById('painTime').value,
+                type: selectedPainType,
+                location: selectedLocation,
+                level: parseInt(document.getElementById('painLevel').value),
+                notes: document.getElementById('painNotes').value,
+                linkedMealId: linkedMealId
+            };
+            data.pain.push(pain);
+            saveData();
+            closePainModal();
+            updateUI();
+            e.target.reset();
+            alert('✓ כאב נשמר');
+        }
+
+        function openBMModal() {
+            document.getElementById('bmModal').classList.add('active');
+            document.getElementById('bmTime').value = new Date().toTimeString().slice(0, 5);
+            selectedBristol = null;
+            document.querySelectorAll('.bristol-btn').forEach(btn => btn.classList.remove('selected'));
+        }
+
+        function closeBMModal() {
+            document.getElementById('bmModal').classList.remove('active');
+        }
+
+        function selectBristol(scale) {
+            selectedBristol = scale;
+            document.getElementById('bristolScale').value = scale;
+            document.querySelectorAll('.bristol-btn').forEach(btn => btn.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+        }
+
+        function saveBM(e) {
+            e.preventDefault();
+            const bm = {
+                id: Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                time: document.getElementById('bmTime').value,
+                bristol: selectedBristol,
+                hasBlood: document.getElementById('hasBlood').checked,
+                hasUrgency: document.getElementById('hasUrgency').checked
+            };
+            data.bm.push(bm);
+            saveData();
+            closeBMModal();
+            updateUI();
+            e.target.reset();
+            alert('✓ יציאה נשמרה');
+        }
+
+        function openJournalModal() {
+            document.getElementById('journalModal').classList.add('active');
+        }
+
+        function closeJournalModal() {
+            document.getElementById('journalModal').classList.remove('active');
+        }
+
+        function updateMoodValue() {
+            document.getElementById('moodValue').textContent = document.getElementById('dayMood').value;
+        }
+
+        function updateEnergyValue() {
+            document.getElementById('energyValue').textContent = document.getElementById('energyLevel').value;
+        }
+
+        function saveJournal(e) {
+            e.preventDefault();
+            const journal = {
+                id: Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                mood: parseInt(document.getElementById('dayMood').value),
+                energy: parseInt(document.getElementById('energyLevel').value),
+                moodState: document.getElementById('moodState').value,
+                hadStress: document.getElementById('hadStress').checked,
+                hadIllness: document.getElementById('hadIllness').checked,
+                notes: document.getElementById('journalNotes').value
+            };
+            data.journal.push(journal);
+            saveData();
+            closeJournalModal();
+            updateUI();
+            e.target.reset();
+            alert('✓ יומן נשמר');
+        }
+
+        function updateUI() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayMeals = data.meals.filter(m => m.date === today);
+            const todayPain = data.pain.filter(p => p.date === today);
+            const todayBM = data.bm.filter(b => b.date === today);
+            document.getElementById('todayMeals').textContent = todayMeals.length;
+            document.getElementById('todayPain').textContent = todayPain.length;
+            document.getElementById('todayBM').textContent = todayBM.length;
+            if (todayPain.length > 0) {
+                const avg = (todayPain.reduce((sum, p) => sum + p.level, 0) / todayPain.length).toFixed(1);
+                document.getElementById('avgPain').textContent = avg;
+            } else {
+                document.getElementById('avgPain').textContent = '-';
+            }
+        }
+
+        function loadMeals() {
+            const list = document.getElementById('mealsList');
+            if (data.meals.length === 0) {
+                list.innerHTML = '<div class="empty-state"><div class="icon">○</div><p>עדיין לא נוספו ארוחות</p></div>';
+                return;
+            }
+            list.innerHTML = data.meals.slice().reverse().map(meal => `
+                <div class="log-item">
+                    <button class="delete-btn" onclick="deleteMeal(${meal.id})">מחק</button>
+                    <div class="log-time">${meal.date} | ${meal.time}</div>
+                    <div class="log-title">${meal.type}</div>
+                    <div class="log-details">${meal.food}</div>
+                    ${meal.notes ? `<div class="log-details" style="margin-top:6px;">הערה: ${meal.notes}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function deleteMeal(id) {
+            if (confirm('למחוק ארוחה?')) {
+                data.meals = data.meals.filter(m => m.id !== id);
+                saveData();
+                loadMeals();
+                updateUI();
+            }
+        }
+
+        function loadPainList() {
+            const list = document.getElementById('painList');
+            if (data.pain.length === 0) {
+                list.innerHTML = '<div class="empty-state"><div class="icon">!</div><p>עדיין לא נוספו דיווחי כאב</p></div>';
+                return;
+            }
+            list.innerHTML = data.pain.slice().reverse().map(pain => {
+                let linkedMeal = '';
+                if (pain.linkedMealId) {
+                    const meal = data.meals.find(m => m.id === pain.linkedMealId);
+                    if (meal) linkedMeal = `<div class="log-details" style="margin-top:6px;">🔗 קשור ל: ${meal.food}</div>`;
+                }
+                return `
+                    <div class="log-item">
+                        <button class="delete-btn" onclick="deletePain(${pain.id})">מחק</button>
+                        <div class="log-time">${pain.date} | ${pain.time}</div>
+                        <div class="log-title">כאב ${pain.type} - ${pain.level}/10</div>
+                        <div class="log-details">מיקום: ${pain.location}</div>
+                        ${pain.notes ? `<div class="log-details">הערה: ${pain.notes}</div>` : ''}
+                        ${linkedMeal}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function deletePain(id) {
+            if (confirm('למחוק דיווח כאב?')) {
+                data.pain = data.pain.filter(p => p.id !== id);
+                saveData();
+                loadPainList();
+                updateUI();
+            }
+        }
+
+        function loadStatistics() {
+            loadPainChart();
+            loadHeatmap();
+            loadInsights();
+            loadTriggers();
+        }
+
+        function loadPainChart() {
+            const chart = document.getElementById('painChart');
+            const last7Days = [];
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                last7Days.push(date.toISOString().split('T')[0]);
+            }
+            const chartData = last7Days.map(date => {
+                const dayPain = data.pain.filter(p => p.date === date);
+                const avg = dayPain.length > 0 ? dayPain.reduce((sum, p) => sum + p.level, 0) / dayPain.length : 0;
+                return { date, avg };
+            });
+            const maxPain = Math.max(...chartData.map(d => d.avg), 1);
+            chart.innerHTML = chartData.map(d => {
+                const height = (d.avg / maxPain) * 100;
+                const dayName = new Date(d.date).toLocaleDateString('he-IL', { weekday: 'short' });
+                return `<div class="bar" style="height: ${height}%"><span class="bar-label">${dayName}</span></div>`;
+            }).join('');
+        }
+
+        function loadHeatmap() {
+            const heatmap = document.getElementById('heatmap');
+            const hourCounts = new Array(24).fill(0);
+            data.pain.forEach(p => {
+                const hour = parseInt(p.time.split(':')[0]);
+                hourCounts[hour] += p.level;
+            });
+            const maxCount = Math.max(...hourCounts, 1);
+            heatmap.innerHTML = hourCounts.map((count, hour) => {
+                const level = count === 0 ? 0 : Math.ceil((count / maxCount) * 5);
+                return `<div class="heatmap-cell level-${level}" title="שעה ${hour}:00 - עוצמה ${count}"></div>`;
+            }).join('');
+        }
+
+        function loadInsights() {
+            const container = document.getElementById('insights');
+            const insights = [];
+            const painByTime = {};
+            data.pain.forEach(p => {
+                const hour = parseInt(p.time.split(':')[0]);
+                painByTime[hour] = (painByTime[hour] || 0) + p.level;
+            });
+            const worstHour = Object.keys(painByTime).reduce((a, b) => painByTime[a] > painByTime[b] ? a : b, 0);
+            if (worstHour) {
+                insights.push({ title: 'שעת כאב שיא', text: `רוב הכאבים מתרחשים בסביבות שעה ${worstHour}:00` });
+            }
+            const last7 = data.pain.filter(p => {
+                const date = new Date(p.date);
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                return date >= weekAgo;
+            });
+            if (last7.length > 0) {
+                const avg = (last7.reduce((sum, p) => sum + p.level, 0) / last7.length).toFixed(1);
+                insights.push({ title: 'ממוצע שבועי', text: `עוצמת כאב ממוצעת: ${avg}/10 ב-7 ימים אחרונים` });
+            }
+            const last30Days = [];
+            for (let i = 0; i < 30; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                last30Days.push(date.toISOString().split('T')[0]);
+            }
+            const painFreeDays = last30Days.filter(date => !data.pain.some(p => p.date === date)).length;
+            if (painFreeDays > 0) {
+                insights.push({ title: 'ימים ללא כאב', text: `${painFreeDays} ימים ללא כאב ב-30 יום אחרונים` });
+            }
+            if (insights.length === 0) {
+                container.innerHTML = '<p style="text-align:center;color:#9ca3af;">אין מספיק נתונים לתובנות</p>';
+            } else {
+                container.innerHTML = insights.map(i => `
+                    <div class="insight-card">
+                        <div class="insight-title">${i.title}</div>
+                        <div class="insight-text">${i.text}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function loadTriggers() {
+            const list = document.getElementById('triggersList');
+            const triggers = {};
+            data.pain.forEach(p => {
+                if (p.linkedMealId) {
+                    const meal = data.meals.find(m => m.id === p.linkedMealId);
+                    if (meal && p.level >= 5) {
+                        const foods = meal.food.split(',');
+                        foods.forEach(food => {
+                            const trimmed = food.trim();
+                            triggers[trimmed] = (triggers[trimmed] || 0) + 1;
+                        });
+                    }
+                }
+            });
+            data.meals.forEach(meal => {
+                const mealTime = new Date(`${meal.date}T${meal.time}`);
+                const painAfter = data.pain.filter(p => {
+                    const painTime = new Date(`${p.date}T${p.time}`);
+                    const diff = (painTime - mealTime) / (1000 * 60 * 60);
+                    return diff > 0 && diff <= 6 && p.level >= 6;
+                });
+                if (painAfter.length > 0) {
+                    const foods = meal.food.split(',');
+                    foods.forEach(food => {
+                        const trimmed = food.trim();
+                        triggers[trimmed] = (triggers[trimmed] || 0) + 1;
+                    });
+                }
+            });
+            const sortedTriggers = Object.entries(triggers).sort((a, b) => b[1] - a[1]).slice(0, 5);
+            if (sortedTriggers.length === 0) {
+                list.innerHTML = '<p style="text-align:center;color:#9ca3af;">אין טריגרים מזוהים</p>';
+                return;
+            }
+            list.innerHTML = sortedTriggers.map(([food, count]) => `
+                <div class="trigger-item">
+                    <span class="trigger-food">${food}</span>
+                    <span class="trigger-count">${count}×</span>
+                </div>
+            `).join('');
+        }
+
+        function exportReport() {
+            const report = `דוח IBD - ${new Date().toLocaleDateString('he-IL')}
+============================================
+
+סטטיסטיקות:
+- סך ארוחות: ${data.meals.length}
+- סך דיווחי כאב: ${data.pain.length}
+- סך יציאות: ${data.bm.length}
+- סך יומנים: ${data.journal.length}
+
+ארוחות אחרונות:
+${data.meals.slice(-15).reverse().map(m => `${m.date} ${m.time} - ${m.type}: ${m.food}`).join('\n')}
+
+כאבים אחרונים:
+${data.pain.slice(-15).reverse().map(p => `${p.date} ${p.time} - ${p.type} (${p.level}/10) - ${p.location}`).join('\n')}
+            `.trim();
+            const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `IBD_Report_${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function clearAllData() {
+            if (confirm('למחוק את כל הנתונים? פעולה בלתי הפיכה!')) {
+                localStorage.removeItem('ibd-data');
+                data = { meals: [], pain: [], bm: [], journal: [] };
+                updateUI();
+                alert('✓ נתונים נמחקו');
+                switchPage('home');
+            }
+        }
+
+        loadData();
+        updateUI();
+    </script>
+</body>
+
+</html>
